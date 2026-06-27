@@ -1,0 +1,45 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ supplier.name }}{% endblock %}
+{% block page_title %}Supplier Detail{% endblock %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="table-card card">
+      <div class="card-header"><i class="bi bi-truck me-2"></i>{{ supplier.name }}</div>
+      <div class="card-body">
+        <table class="table table-borderless small">
+          <tr><td class="text-muted">Contact</td><td class="fw-600">{{ supplier.contact_person|default:"—" }}</td></tr>
+          <tr><td class="text-muted">Phone</td><td>{{ supplier.phone|default:"—" }}</td></tr>
+          <tr><td class="text-muted">Email</td><td>{{ supplier.email|default:"—" }}</td></tr>
+          <tr><td class="text-muted">Address</td><td>{{ supplier.address|default:"—" }}</td></tr>
+          <tr><td class="text-muted">Since</td><td>{{ supplier.created_at|date:"M d, Y" }}</td></tr>
+        </table>
+        <a href="{% url 'supplier_edit' supplier.pk %}" class="btn btn-outline-secondary btn-sm w-100">Edit</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="table-card card">
+      <div class="card-header"><i class="bi bi-capsule me-2"></i>Medicines from this Supplier ({{ medicines.count }})</div>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead><tr><th>Medicine</th><th>Category</th><th>Stock</th><th>Price</th><th>Expiry</th></tr></thead>
+          <tbody>
+            {% for med in medicines %}
+            <tr>
+              <td><a href="{% url 'medicine_detail' med.pk %}" class="fw-600">{{ med.name }}</a></td>
+              <td>{{ med.category|default:"—" }}</td>
+              <td class="{% if med.is_low_stock %}text-danger fw-600{% endif %}">{{ med.quantity }}</td>
+              <td>Rs {{ med.price }}</td>
+              <td class="small {% if med.is_expiring_soon %}text-danger{% endif %}">{{ med.expiry_date }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-3">No medicines linked to this supplier.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

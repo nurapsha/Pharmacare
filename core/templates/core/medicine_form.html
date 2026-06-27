@@ -1,0 +1,91 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="table-card card">
+      <div class="card-header">
+        <i class="bi bi-capsule-pill me-2"></i>{{ title }}
+      </div>
+      <div class="card-body p-4">
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-600 small">Medicine Name *</label>
+              {{ form.name }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-600 small">Generic Name</label>
+              {{ form.generic_name }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-600 small">Category</label>
+              {{ form.category }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-600 small">Manufacturer *</label>
+              {{ form.manufacturer }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-600 small">Supplier</label>
+              {{ form.supplier }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-600 small">Batch Number</label>
+              {{ form.batch_number }}
+            </div>
+
+            <div class="col-12"><hr class="my-1"><small class="text-muted fw-600">PRICING & STOCK</small></div>
+
+            <div class="col-md-3">
+              <label class="form-label fw-600 small">Selling Price (Rs) *</label>
+              {{ form.price }}
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-600 small">Cost Price (Rs)</label>
+              {{ form.cost_price }}
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-600 small">Current Quantity *</label>
+              {{ form.quantity }}
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-600 small">Minimum Stock Alert</label>
+              {{ form.minimum_stock }}
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-600 small">Expiry Date *</label>
+              {{ form.expiry_date }}
+            </div>
+
+            <div class="col-12">
+              <label class="form-label fw-600 small">Description / Notes</label>
+              {{ form.description }}
+            </div>
+          </div>
+
+          {% if form.errors %}
+          <div class="alert alert-danger mt-3">
+            {% for field, errors in form.errors.items %}
+              {% for error in errors %}<div>{{ field }}: {{ error }}</div>{% endfor %}
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <div class="d-flex gap-3 mt-4">
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="bi bi-check-circle me-2"></i>Save Medicine
+            </button>
+            <a href="{% url 'medicine_list' %}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

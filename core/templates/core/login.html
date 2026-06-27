@@ -1,0 +1,57 @@
+{% extends 'core/base.html' %}
+{% block auth_content %}
+<div style="min-height:100vh;background:linear-gradient(135deg,#0d3b66 0%,#0a2d52 60%,#1a5276 100%);display:flex;align-items:center;justify-content:center;">
+  <div style="width:100%;max-width:420px;padding:20px;">
+
+    <!-- Logo -->
+    <div class="text-center mb-4">
+      <div style="width:70px;height:70px;background:rgba(46,204,113,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 15px;">
+        <i class="bi bi-capsule fs-2 text-success"></i>
+      </div>
+      <h3 style="color:#fff;font-weight:700;">PharmaCare AI</h3>
+      <p style="color:rgba(255,255,255,0.6);font-size:0.875rem;">Smart Pharmacy Management System</p>
+    </div>
+
+    <!-- Card -->
+    <div style="background:#fff;border-radius:16px;padding:35px;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+      <h5 style="font-weight:700;color:#0d3b66;margin-bottom:5px;">Welcome Back</h5>
+      <p class="text-muted small mb-4">Sign in to your account</p>
+
+      {% for message in messages %}
+      <div class="alert alert-danger py-2">{{ message }}</div>
+      {% endfor %}
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label fw-500 small">Username</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-muted"></i></span>
+            <input type="text" name="username" class="form-control border-start-0"
+                   placeholder="Enter username" required autofocus />
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-500 small">Password</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock text-muted"></i></span>
+            <input type="password" name="password" class="form-control border-start-0"
+                   placeholder="Enter password" required />
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 py-2 fw-600">
+          <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+        </button>
+      </form>
+
+      <div class="text-center mt-4 pt-3 border-top">
+        <small class="text-muted">Demo credentials: <strong>admin / admin123</strong></small>
+      </div>
+    </div>
+
+    <p class="text-center mt-3" style="color:rgba(255,255,255,0.4);font-size:0.75rem;">
+      PharmaCare AI &copy; 2024 — Powered by Django &amp; AI
+    </p>
+  </div>
+</div>
+{% endblock %}

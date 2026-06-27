@@ -1,0 +1,60 @@
+{% extends 'core/base.html' %}
+{% block title %}Sales History{% endblock %}
+{% block page_title %}Sales History{% endblock %}
+
+{% block content %}
+<!-- Date Filter -->
+<div class="table-card card mb-4">
+  <div class="card-body py-3">
+    <form method="get" class="row g-2 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label small fw-600">From Date</label>
+        <input type="date" name="start" class="form-control" value="{{ start_date }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small fw-600">To Date</label>
+        <input type="date" name="end" class="form-control" value="{{ end_date }}">
+      </div>
+      <div class="col-md-2 d-flex gap-2">
+        <button type="submit" class="btn btn-primary flex-fill">Filter</button>
+        <a href="{% url 'sales_list' %}" class="btn btn-outline-secondary">Clear</a>
+      </div>
+      <div class="col-md-4 text-end">
+        <div class="fw-700 fs-5 text-primary">Total: Rs {{ total_revenue|floatformat:2 }}</div>
+        <div class="text-muted small">{{ sales.count }} sale(s)</div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="table-card card">
+  <div class="card-header d-flex justify-content-between">
+    <span><i class="bi bi-list-ul me-2"></i>Sales Records</span>
+    <a href="{% url 'billing' %}" class="btn btn-sm btn-success"><i class="bi bi-plus me-1"></i>New Sale</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr><th>Invoice</th><th>Customer</th><th>Items</th><th>Total</th><th>Discount</th><th>Net</th><th>Date</th><th>Staff</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for sale in sales %}
+        <tr>
+          <td><a href="{% url 'sale_receipt' sale.pk %}" class="fw-600 text-primary">{{ sale.invoice_number }}</a></td>
+          <td>{{ sale.customer.name|default:"Walk-in" }}</td>
+          <td class="text-center">{{ sale.items.count }}</td>
+          <td>Rs {{ sale.total_amount|floatformat:2 }}</td>
+          <td class="text-danger">{% if sale.discount %}-Rs {{ sale.discount }}{% else %}—{% endif %}</td>
+          <td class="fw-600">Rs {{ sale.net_total|floatformat:2 }}</td>
+          <td class="small text-muted">{{ sale.sale_date|date:"M d, Y H:i" }}</td>
+          <td class="small">{{ sale.staff.username|default:"—" }}</td>
+          <td><a href="{% url 'sale_receipt' sale.pk %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9" class="text-center py-4 text-muted">No sales found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

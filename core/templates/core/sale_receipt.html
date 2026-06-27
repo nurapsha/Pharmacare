@@ -1,0 +1,110 @@
+{% extends 'core/base.html' %}
+{% block title %}Receipt {{ sale.invoice_number }}{% endblock %}
+{% block page_title %}Sale Receipt{% endblock %}
+
+{% block extra_css %}
+<style>
+@media print {
+  #sidebar, .topbar, .no-print { display: none !important; }
+  #main-content { margin-left: 0 !important; }
+  .receipt-card { box-shadow: none !important; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="receipt-card card p-4 mb-4">
+  <!-- Header -->
+  <div class="text-center border-bottom pb-3 mb-3">
+    <h4 class="fw-700 text-primary mb-0"><i class="bi bi-capsule me-2"></i>PharmaCare AI</h4>
+    <p class="text-muted small mb-0">Smart Pharmacy Management</p>
+    <p class="text-muted small">Kathmandu, Nepal | Tel: +977-1-XXXXXXX</p>
+    <div class="mt-2">
+      <span class="badge bg-primary fs-6 px-3 py-2">{{ sale.invoice_number }}</span>
+    </div>
+  </div>
+
+  <!-- Sale Info -->
+  <div class="row mb-3">
+    <div class="col-6">
+      <small class="text-muted d-block">Customer</small>
+      <strong>{{ sale.customer.name|default:"Walk-in Customer" }}</strong>
+      {% if sale.customer.phone %}<div class="text-muted small">{{ sale.customer.phone }}</div>{% endif %}
+    </div>
+    <div class="col-6 text-end">
+      <small class="text-muted d-block">Date & Time</small>
+      <strong>{{ sale.sale_date|date:"M d, Y" }}</strong>
+      <div class="text-muted small">{{ sale.sale_date|date:"H:i A" }}</div>
+    </div>
+  </div>
+
+  <!-- Items -->
+  <table class="table table-sm">
+    <thead style="background:#f7fafc;">
+      <tr>
+        <th>#</th>
+        <th>Medicine</th>
+        <th class="text-center">Qty</th>
+        <th class="text-end">Unit Price</th>
+        <th class="text-end">Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>
+          <div class="fw-600">{{ item.medicine.name }}</div>
+          <div class="text-muted small">{{ item.medicine.generic_name }}</div>
+        </td>
+        <td class="text-center">{{ item.quantity }}</td>
+        <td class="text-end">Rs {{ item.unit_price }}</td>
+        <td class="text-end fw-600">Rs {{ item.subtotal|floatformat:2 }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="4" class="text-end text-muted small">Subtotal</td>
+        <td class="text-end fw-600">Rs {{ sale.total_amount|floatformat:2 }}</td>
+      </tr>
+      {% if sale.discount %}
+      <tr>
+        <td colspan="4" class="text-end text-muted small">Discount</td>
+        <td class="text-end text-danger">- Rs {{ sale.discount|floatformat:2 }}</td>
+      </tr>
+      {% endif %}
+      <tr style="border-top:2px solid #0d3b66;">
+        <td colspan="4" class="text-end fw-700 fs-5">TOTAL</td>
+        <td class="text-end fw-700 fs-5 text-primary">Rs {{ sale.net_total|floatformat:2 }}</td>
+      </tr>
+      <tr>
+        <td colspan="4" class="text-end text-muted small">Paid</td>
+        <td class="text-end">Rs {{ sale.paid_amount|floatformat:2 }}</td>
+      </tr>
+      <tr>
+        <td colspan="4" class="text-end text-muted small">Change</td>
+        <td class="text-end text-success fw-600">Rs {{ sale.change_amount|floatformat:2 }}</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="text-center mt-3 pt-3 border-top">
+    <p class="text-muted small mb-0">Thank you for your purchase!</p>
+    <p class="text-muted small">Served by: {{ sale.staff.get_full_name|default:sale.staff.username }}</p>
+  </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="d-flex gap-3 justify-content-center no-print">
+  <button onclick="window.print()" class="btn btn-primary px-4">
+    <i class="bi bi-printer me-2"></i>Print Receipt
+  </button>
+  <a href="{% url 'billing' %}" class="btn btn-success px-4">
+    <i class="bi bi-plus-circle me-2"></i>New Sale
+  </a>
+  <a href="{% url 'sales_list' %}" class="btn btn-outline-secondary px-4">
+    <i class="bi bi-list me-2"></i>All Sales
+  </a>
+</div>
+{% endblock %}

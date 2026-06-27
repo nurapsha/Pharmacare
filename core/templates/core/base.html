@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}PharmaCare {% endblock %}</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet"/>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --primary: #0d3b66;
+      --primary-light: #1a5276;
+      --accent: #2ecc71;
+      --accent-dark: #27ae60;
+      --sidebar-width: 260px;
+      --topbar-height: 65px;
+    }
+
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #f0f4f8; color: #2d3748; }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      width: var(--sidebar-width);
+      min-height: 100vh;
+      background: linear-gradient(180deg, var(--primary) 0%, #0a2d52 100%);
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 100;
+      transition: all 0.3s;
+      overflow-y: auto;
+    }
+
+    .sidebar-brand {
+      padding: 20px 20px 15px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .sidebar-brand h5 {
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin: 0;
+    }
+    .sidebar-brand p { color: rgba(255,255,255,0.5); font-size: 0.75rem; margin: 0; }
+
+    .sidebar-nav { padding: 15px 0; }
+    .nav-section-title {
+      color: rgba(255,255,255,0.35);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 12px 20px 5px;
+    }
+
+    .sidebar-nav .nav-link {
+      color: rgba(255,255,255,0.75);
+      padding: 10px 20px;
+      border-radius: 0;
+      font-size: 0.875rem;
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+    .sidebar-nav .nav-link:hover,
+    .sidebar-nav .nav-link.active {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      border-left-color: var(--accent);
+    }
+    /*.sidebar-nav .nav-link i { width: 18px; font-size: 1rem; }*/
+    /* ── Main Content ── */
+    #main-content {
+      margin-left: var(--sidebar-width);
+      min-height: 100vh;
+    }
+
+    /* ── Top Bar ── */
+    .topbar {
+      height: var(--topbar-height);
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      padding: 0 25px;
+      position: sticky;
+      top: 0;
+      z-index: 99;
+      gap: 15px;
+    }
+    .topbar-title { font-size: 1.1rem; font-weight: 600; color: var(--primary); flex: 1; }
+    .topbar .btn-sm { font-size: 0.8rem; }
+
+    /* ── Page Content ── */
+    .page-content { padding: 25px; }
+
+    /* ── Cards ── */
+    .stat-card {
+      border: none;
+      border-radius: 12px;
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-3px); }
+    .stat-card .stat-icon {
+      width: 50px; height: 50px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 12px;
+    }
+    .stat-card .stat-value { font-size: 1.7rem; font-weight: 700; line-height: 1; }
+    .stat-card .stat-label { font-size: 0.8rem; color: #718096; margin-top: 4px; }
+
+    .card-blue    { background: #ebf8ff; } .card-blue .stat-icon    { background: #bee3f8; color: #2b6cb0; }
+    .card-green   { background: #f0fff4; } .card-green .stat-icon   { background: #c6f6d5; color: #276749; }
+    .card-orange  { background: #fffaf0; } .card-orange .stat-icon  { background: #feebc8; color: #c05621; }
+    .card-red     { background: #fff5f5; } .card-red .stat-icon     { background: #fed7d7; color: #c53030; }
+    .card-purple  { background: #faf5ff; } .card-purple .stat-icon  { background: #e9d8fd; color: #6b46c1; }
+    .card-teal    { background: #e6fffa; } .card-teal .stat-icon    { background: #b2f5ea; color: #2c7a7b; }
+
+    /* ── Tables ── */
+    .table-card {
+      background: #fff;
+      border-radius: 12px;
+      border: none;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    .table-card .card-header {
+      background: transparent;
+      border-bottom: 1px solid #f0f4f8;
+      padding: 16px 20px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--primary);
+    }
+    .table thead th {
+      background: #f7fafc;
+      color: #4a5568;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: none;
+      padding: 12px 15px;
+    }
+    .table td { padding: 12px 15px; vertical-align: middle; font-size: 0.875rem; }
+
+    /* ── Badges ── */
+    .badge-low { background: #fff3cd; color: #856404; }
+    .badge-ok  { background: #d1e7dd; color: #0f5132; }
+    .badge-exp { background: #f8d7da; color: #842029; }
+    .badge-critical { background: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
+    .badge-high     { background: #fff3cd; color: #664d03; }
+    .badge-medium   { background: #d1ecf1; color: #0c5460; }
+
+    /* ── Buttons ── */
+    .btn-primary { background: var(--primary); border-color: var(--primary); }
+    .btn-primary:hover { background: var(--primary-light); border-color: var(--primary-light); }
+    .btn-success { background: var(--accent-dark); border-color: var(--accent-dark); }
+
+    /* ── Alerts ── */
+    .alert { border-radius: 10px; font-size: 0.875rem; border: none; }
+
+    /* ── Form controls ── */
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 0.2rem rgba(13, 59, 102, 0.15);
+    }
+
+    /* ── Receipt ── */
+    .receipt-card { max-width: 650px; margin: 0 auto; background: #fff; border-radius: 12px; }
+
+    /* ── AI Insight Cards ── */
+    .ai-card {
+      background: linear-gradient(135deg, #667eea22 0%, #764ba222 100%);
+      border: 1px solid #c3dafe;
+      border-radius: 12px;
+      padding: 18px;
+    }
+    .ai-card .ai-title { font-weight: 600; color: #4c51bf; font-size: 0.9rem; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 3px; }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+{% if user.is_authenticated %}
+<!-- ══════ SIDEBAR ══════ -->
+<div id="sidebar">
+  <div class="sidebar-brand">
+    <div class="d-flex align-items-center gap-2 mb-1">
+      <i class="bi bi-capsule fs-4 text-success"></i>
+      <h5>PharmaCare </h5>
+    </div>
+    <p>Smart Pharmacy System</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-title">Main</div>
+    <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+      <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+
+    <div class="nav-section-title">Pharmacy</div>
+    <a href="{% url 'medicine_list' %}" class="nav-link {% if 'medicine' in request.resolver_match.url_name %}active{% endif %}">
+      <i class="bi bi-capsule-pill"></i> Medicines
+    </a>
+    <a href="{% url 'inventory' %}" class="nav-link {% if request.resolver_match.url_name == 'inventory' %}active{% endif %}">
+      <i class="bi bi-boxes"></i> Inventory
+    </a>
+    <a href="{% url 'billing' %}" class="nav-link {% if 'billing' in request.resolver_match.url_name or 'sale' in request.resolver_match.url_name %}active{% endif %}">
+      <i class="bi bi-receipt"></i> Billing / Sales
+    </a>
+
+    <div class="nav-section-title">People</div>
+    <a href="{% url 'customer_list' %}" class="nav-link {% if 'customer' in request.resolver_match.url_name %}active{% endif %}">
+      <i class="bi bi-people"></i> Customers
+    </a>
+    <a href="{% url 'supplier_list' %}" class="nav-link {% if 'supplier' in request.resolver_match.url_name %}active{% endif %}">
+      <i class="bi bi-truck"></i> Suppliers
+    </a>
+
+    <div class="nav-section-title">Analytics</div>
+    <a href="{% url 'reports' %}" class="nav-link {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
+      <i class="bi bi-bar-chart-line"></i> Reports
+      
+    </a>
+   
+    
+  </nav>
+
+  <!-- User info at bottom -->
+  <div class="mt-auto p-3" style="border-top:1px solid rgba(255,255,255,0.1); position:absolute; bottom:0; width:100%;">
+    <div class="d-flex align-items-center gap-2">
+      <div style="width:32px;height:32px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:0.85rem;">
+        {{ user.username|first|upper }}
+      </div>
+      <div>
+        <div style="color:#fff;font-size:0.8rem;font-weight:600;">{{ user.get_full_name|default:user.username }}</div>
+        <div style="color:rgba(255,255,255,0.5);font-size:0.7rem;">{% if user.is_superuser %}Admin{% else %}Staff{% endif %}</div>
+      </div>
+      <a href="{% url 'logout' %}" class="ms-auto text-white opacity-50" title="Logout"><i class="bi bi-box-arrow-right"></i></a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MAIN CONTENT ══════ -->
+<div id="main-content">
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="topbar-title">{% block page_title %}Dashboard{% endblock %}</div>
+
+    {% with warnings=request.session.ai_warnings %}
+    {% endwith %}
+
+    
+    <a href="{% url 'billing' %}" class="btn btn-success btn-sm">
+      <i class="bi bi-plus-circle"></i> New Sale
+    </a>
+  </div>
+
+  <!-- Messages -->
+  <div class="px-4 pt-3">
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="page-content">
+    {% block content %}{% endblock %}
+  </div>
+</div>
+
+{% else %}
+  {% block auth_content %}{% endblock %}
+{% endif %}
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

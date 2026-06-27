@@ -1,0 +1,125 @@
+{% extends 'core/base.html' %}
+{% block title %}Inventory{% endblock %}
+{% block page_title %}Inventory Management{% endblock %}
+
+{% block content %}
+<!-- Summary Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="stat-card card-orange">
+      <div class="stat-icon"><i class="bi bi-exclamation-triangle"></i></div>
+      <div class="stat-value" style="color:#c05621;">{{ low_stock_count }}</div>
+      <div class="stat-label">Low Stock Items</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card card-red">
+      <div class="stat-icon"><i class="bi bi-calendar-x"></i></div>
+      <div class="stat-value" style="color:#c53030;">{{ expiring_count }}</div>
+      <div class="stat-label">Expiring in 30 Days</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card" style="background:#fee2e2;">
+      <div class="stat-icon" style="background:#fecaca;color:#991b1b;"><i class="bi bi-x-circle"></i></div>
+      <div class="stat-value" style="color:#991b1b;">{{ expired_count }}</div>
+      <div class="stat-label">Expired (Needs Removal)</div>
+    </div>
+  </div>
+</div>
+
+<!-- Low Stock -->
+{% if low_stock %}
+<div class="table-card card mb-4">
+  <div class="card-header" style="border-left:4px solid #f59e0b;">
+    <i class="bi bi-exclamation-triangle text-warning me-2"></i>Low Stock Alert
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead><tr><th>Medicine</th><th>Category</th><th>Current Stock</th><th>Minimum</th><th>Needed</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for med in low_stock %}
+        <tr>
+          <td><div class="fw-600">{{ med.name }}</div><div class="text-muted small">{{ med.manufacturer }}</div></td>
+          <td>{{ med.category|default:"—" }}</td>
+          <td><span class="fw-700 text-danger">{{ med.quantity }}</span></td>
+          <td>{{ med.minimum_stock }}</td>
+          <td class="fw-600 text-warning">{{ med.minimum_stock|add:"-"|add:med.quantity }} short</td>
+          <td><a href="{% url 'medicine_stock_adjust' med.pk %}" class="btn btn-sm btn-success">+ Add Stock</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<!-- Expiring Soon -->
+{% if expiring %}
+<div class="table-card card mb-4">
+  <div class="card-header" style="border-left:4px solid #ef4444;">
+    <i class="bi bi-calendar-x text-danger me-2"></i>Expiring Within 30 Days
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead><tr><th>Medicine</th><th>Stock</th><th>Expiry Date</th><th>Days Left</th><th>AI Suggestion</th></tr></thead>
+      <tbody>
+        {% for med in expiring %}
+        <tr>
+          <td><div class="fw-600">{{ med.name }}</div></td>
+          <td>{{ med.quantity }}</td>
+          <td>{{ med.expiry_date }}</td>
+          <td>
+            <span class="badge {% if med.days_until_expiry <= 7 %}badge-critical{% else %}badge-high{% endif %}">
+              {{ med.days_until_expiry }} days
+            </span>
+          </td>
+          <td class="small text-muted">
+            {% if med.days_until_expiry <= 15 %}
+              🤖 Apply 30% discount immediately
+            {% else %}
+              🤖 Consider 10-15% promotion
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<!-- All Medicines -->
+<div class="table-card card">
+  <div class="card-header d-flex justify-content-between">
+    <span><i class="bi bi-boxes me-2"></i>Complete Inventory ({{ all_medicines.count }} items)</span>
+    <a href="{% url 'medicine_add' %}" class="btn btn-sm btn-success"><i class="bi bi-plus-circle me-1"></i>Add Medicine</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead><tr><th>#</th><th>Medicine</th><th>Category</th><th>Stock</th><th>Min Stock</th><th>Price</th><th>Expiry</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for med in all_medicines %}
+        <tr>
+          <td class="text-muted small">{{ forloop.counter }}</td>
+          <td>
+            <a href="{% url 'medicine_detail' med.pk %}" class="fw-600 text-decoration-none">{{ med.name }}</a>
+          </td>
+          <td class="small">{{ med.category|default:"—" }}</td>
+          <td class="fw-600 {% if med.is_low_stock %}text-danger{% else %}text-success{% endif %}">{{ med.quantity }}</td>
+          <td class="text-muted small">{{ med.minimum_stock }}</td>
+          <td>Rs {{ med.price }}</td>
+          <td class="small">{{ med.expiry_date }}</td>
+          <td>
+            {% if med.is_expired %}<span class="badge badge-exp">Expired</span>
+            {% elif med.is_low_stock %}<span class="badge badge-low">Low Stock</span>
+            {% elif med.is_expiring_soon %}<span class="badge" style="background:#fff3cd;color:#856404;">Exp Soon</span>
+            {% else %}<span class="badge badge-ok">OK</span>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

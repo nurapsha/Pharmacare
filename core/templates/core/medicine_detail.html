@@ -1,0 +1,100 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ medicine.name }}{% endblock %}
+{% block page_title %}Medicine Detail{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="table-card card">
+      <div class="card-header d-flex justify-content-between">
+        <span><i class="bi bi-capsule me-2"></i>{{ medicine.name }}</span>
+        <div class="d-flex gap-2">
+          <a href="{% url 'medicine_edit' medicine.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+          <a href="{% url 'medicine_stock_adjust' medicine.pk %}" class="btn btn-sm btn-success">+ Stock</a>
+        </div>
+      </div>
+      <div class="card-body">
+        <table class="table table-borderless small mb-0">
+          <tr><td class="text-muted">Generic Name</td><td class="fw-600">{{ medicine.generic_name|default:"—" }}</td></tr>
+          <tr><td class="text-muted">Category</td><td>{{ medicine.category|default:"—" }}</td></tr>
+          <tr><td class="text-muted">Manufacturer</td><td>{{ medicine.manufacturer }}</td></tr>
+          <tr><td class="text-muted">Supplier</td><td>{{ medicine.supplier|default:"—" }}</td></tr>
+          <tr><td class="text-muted">Batch #</td><td>{{ medicine.batch_number|default:"—" }}</td></tr>
+          <tr><td class="text-muted">Selling Price</td><td class="fw-600 text-success">Rs {{ medicine.price }}</td></tr>
+          <tr><td class="text-muted">Cost Price</td><td>Rs {{ medicine.cost_price }}</td></tr>
+          <tr><td class="text-muted">Profit/unit</td><td class="text-primary fw-600">Rs {{ medicine.profit_margin }}</td></tr>
+          <tr>
+            <td class="text-muted">Stock</td>
+            <td>
+              <span class="fw-700 fs-5 {% if medicine.is_low_stock %}text-danger{% else %}text-success{% endif %}">
+                {{ medicine.quantity }}
+              </span> units
+              {% if medicine.is_low_stock %}<span class="badge badge-low ms-2">Low</span>{% endif %}
+            </td>
+          </tr>
+          <tr>
+            <td class="text-muted">Expiry Date</td>
+            <td>
+              {{ medicine.expiry_date }}
+              {% if medicine.is_expired %}
+                <span class="badge badge-exp ms-1">Expired</span>
+              {% elif medicine.is_expiring_soon %}
+                <span class="badge badge-low ms-1">{{ medicine.days_until_expiry }} days left</span>
+              {% endif %}
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-7">
+    <!-- Stock Log -->
+    <div class="table-card card mb-3">
+      <div class="card-header"><i class="bi bi-journal-text me-2"></i>Stock History</div>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead><tr><th>Action</th><th>Change</th><th>After</th><th>Notes</th><th>Date</th></tr></thead>
+          <tbody>
+            {% for log in stock_logs %}
+            <tr>
+              <td><span class="badge {% if log.action == 'SALE' %}bg-danger{% elif log.action == 'ADD' %}bg-success{% else %}bg-secondary{% endif %}">{{ log.get_action_display }}</span></td>
+              <td class="fw-600 {% if log.quantity_change > 0 %}text-success{% else %}text-danger{% endif %}">
+                {% if log.quantity_change > 0 %}+{% endif %}{{ log.quantity_change }}
+              </td>
+              <td>{{ log.quantity_after }}</td>
+              <td class="small text-muted">{{ log.notes|truncatechars:30 }}</td>
+              <td class="small text-muted">{{ log.timestamp|date:"M d, H:i" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-3">No history yet</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Recent Sales -->
+    <div class="table-card card">
+      <div class="card-header"><i class="bi bi-cart me-2"></i>Recent Sales</div>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead><tr><th>Invoice</th><th>Qty</th><th>Price</th><th>Date</th></tr></thead>
+          <tbody>
+            {% for item in sale_items %}
+            <tr>
+              <td><a href="{% url 'sale_receipt' item.sale.pk %}">{{ item.sale.invoice_number }}</a></td>
+              <td>{{ item.quantity }}</td>
+              <td>Rs {{ item.unit_price }}</td>
+              <td class="small text-muted">{{ item.sale.sale_date|date:"M d, Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-center text-muted py-3">No sales yet</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

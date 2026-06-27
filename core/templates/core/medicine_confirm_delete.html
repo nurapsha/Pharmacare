@@ -1,0 +1,23 @@
+{% extends 'core/base.html' %}
+{% block title %}Delete Medicine{% endblock %}
+{% block page_title %}Delete Medicine{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="table-card card border-danger">
+      <div class="card-body text-center p-5">
+        <i class="bi bi-exclamation-triangle-fill text-danger fs-1 mb-3 d-block"></i>
+        <h5>Delete "{{ medicine.name }}"?</h5>
+        <p class="text-muted">This action cannot be undone. All related sales data will also be affected.</p>
+        <div class="d-flex justify-content-center gap-3 mt-4">
+          <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger px-4">Yes, Delete</button>
+          </form>
+          <a href="{% url 'medicine_list' %}" class="btn btn-outline-secondary px-4">Cancel</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

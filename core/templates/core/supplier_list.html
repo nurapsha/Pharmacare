@@ -1,0 +1,34 @@
+{% extends 'core/base.html' %}
+{% block title %}Suppliers{% endblock %}
+{% block page_title %}Supplier Management{% endblock %}
+{% block content %}
+<div class="table-card card">
+  <div class="card-header d-flex justify-content-between">
+    <span><i class="bi bi-truck me-2"></i>Suppliers ({{ suppliers.count }})</span>
+    <a href="{% url 'supplier_add' %}" class="btn btn-success btn-sm"><i class="bi bi-plus me-1"></i>Add Supplier</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead><tr><th>#</th><th>Company</th><th>Contact Person</th><th>Phone</th><th>Email</th><th>Medicines</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for s in suppliers %}
+        <tr>
+          <td class="text-muted">{{ forloop.counter }}</td>
+          <td class="fw-600">{{ s.name }}</td>
+          <td>{{ s.contact_person|default:"—" }}</td>
+          <td>{{ s.phone|default:"—" }}</td>
+          <td class="text-muted small">{{ s.email|default:"—" }}</td>
+          <td><span class="badge bg-primary">{{ s.medicine_set.count }}</span></td>
+          <td>
+            <a href="{% url 'supplier_detail' s.pk %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a>
+            <a href="{% url 'supplier_edit' s.pk %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center text-muted py-4">No suppliers yet. <a href="{% url 'supplier_add' %}">Add one.</a></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
